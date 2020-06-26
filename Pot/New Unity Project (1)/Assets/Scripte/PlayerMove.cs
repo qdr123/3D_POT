@@ -7,7 +7,8 @@ public class PlayerMove : MonoBehaviour
 {
     public float speed = 5.0f;
     public float Rspeed = 150; //회전속도 
-    public float JumpPower = 10;
+    public float JumpPower = 4;
+    bool jump = false;
     Rigidbody rigid;
     Animator anim;
     //회전각도를 직접 제어
@@ -17,6 +18,7 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
+        rigid = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -26,21 +28,32 @@ public class PlayerMove : MonoBehaviour
         Rotate();
         Attack();
         Jump();
+       
     }
 
     private void Jump()
     {
-       if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            rigid.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
-            anim.SetTrigger("Jump");
+            if (!jump)
+            {
+                anim.SetTrigger("Jump");
+                rigid.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
+                jump = true;
+            }
         }
-
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Ground"))
+        {
+            jump = false;
+        }
     }
 
     private void Attack()
     {
-      if(Input.GetKeyDown(KeyCode.Z))
+      if(Input.GetKeyDown(KeyCode.Mouse0))
         {
             anim.SetTrigger("Attack");
         }
