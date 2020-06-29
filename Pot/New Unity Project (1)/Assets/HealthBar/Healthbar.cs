@@ -31,8 +31,8 @@ public class Healthbar : MonoBehaviour {
 
     [Space]
 
-    [Header("Regeneration:")]    
-    // If 'regenerateHealth' is checked, character will regenerate health/sec at the rate of 'healthPerSecond':
+    [Header("Regeneration:")]
+    // regenerateHealth'를 체크하면 캐릭터는 'healthPerSecond'비율로 체력 / 초를 재생합니다:
     public bool regenerateHealth;
     public float healthPerSecond;
 
@@ -45,17 +45,17 @@ public class Healthbar : MonoBehaviour {
 
     private void Start()
     {
-        // If the healthbar hasn't already been assigned, then automatically assign it.
+        // 상태 표시 줄이 아직 지정되지 않은 경우 자동으로 지정됩니다..
         if (healthbarDisplay == null)
         {
             healthbarDisplay = GetComponent<Slider>();
         }
 
-        // Set the minimum and maximum health on the healthbar to be equal to the 'minimumHealth' and 'maximumHealth' variables:
+        // Healthbar의 최소 및 최대 상태를 'minimumHealth'및 'maximumHealth'변수와 동일하게 설정하십시오.:
         healthbarDisplay.minValue = minimumHealth;
         healthbarDisplay.maxValue = maximumHealth;
 
-        // Change the starting visible health to be equal to the variable:
+        // 시작 가시 상태를 변수와 동일하게 변경하십시오.
         UpdateHealth();
     }
 
@@ -64,32 +64,31 @@ public class Healthbar : MonoBehaviour {
     {
         healthPercentage = int.Parse((Mathf.Round(maximumHealth * (health / 100f))).ToString());
 
-        // If the player's health is below the minimum health, then set it to the minimum health:
+        // 플레이어의 체력이 최소 체력보다 낮 으면 체력을 최소 체력으로 설정합니다.:
         if (health < minimumHealth)
         {
             health = minimumHealth;
         }
 
-        // If the player's health is above the maximum health, then set it to the maximum health:
+        // 플레이어의 체력이 최대 체력보다 높으면 최대 체력으로 설정하십시오.
         if (health > maximumHealth)
         {
             health = maximumHealth;
         }
 
-        // If the character's health is not full and the health regeneration button is ticked, regenerate health/sec at the rate of 'healthPerSecond':
-        if (health < maximumHealth && regenerateHealth)
+        // 캐릭터의 체력이 가득 차 있지 않고 체력 재생 버튼이 틱되면 'healthPerSecond'비율로 체력 / 초를 재생성합니다
         {
             health += healthPerSecond * Time.deltaTime;
 
-            // Each time the health is changed, update it visibly:
+            //상태가 변경 될 때마다 다음과 같이 시각적으로 업데이트하십시오.
             UpdateHealth();
         }
     }
 
-    // Set the health bar to display the same health value as the health variable:
+    // 상태 표시 줄을 설정하여 상태 변수와 동일한 상태 값을 표시하십시오.:
     public void UpdateHealth()
     {
-        // Change the health bar color acording to how much health the player has:
+        // 플레이어의 체력에 따라 체력 막대 색상 변경:
         if (healthPercentage <= lowHealth && health >= minimumHealth && transform.Find("Bar").GetComponent<Image>().color != lowHealthColor)
         {
             ChangeHealthbarColor(lowHealthColor);
@@ -110,14 +109,14 @@ public class Healthbar : MonoBehaviour {
 
     public void GainHealth(float amount)
     {
-        // Add 'amount' hitpoints, then update the characters health:
+        // '금액'히트 포인트를 추가 한 다음 캐릭터 상태를 업데이트하십시오.:
         health += amount;
         UpdateHealth();
     }
 
     public void TakeDamage(int amount)
     {
-        // Remove 'amount' hitpoints, then update the characters health:
+        // 금액'체력을 제거하고 캐릭터 체력을 업데이트하십시오:
         health -= float.Parse(amount.ToString());
         UpdateHealth();
     }
