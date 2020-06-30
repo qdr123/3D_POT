@@ -35,20 +35,21 @@ public class EnemyFSM : MonoBehaviour
     #endregion
 
     ///필요한 변수들
-    public float findRange = 15f; //플레이어를 찾는 범위
-    public float moveRange = 30f; //시작지점에서 최대 이동가능한 범위
+    public float findRange = 5f; //플레이어를 찾는 범위
+    public float moveRange = 5f; //시작지점에서 최대 이동가능한 범위
     public float attackRange = 2f; //공격 가능 범위
     public int iniHp = 100;
     Vector3 startPoint; //몬스터 시작위치
     Transform player;   //플레이어를 찾기위해(안그럼 모든 몬스터에 다 드래그앤드랍 해줘야 한다 걍 코드로 찾아서 처리하기)
     CharacterController cc; //몬스터 이동을 위해 캐릭터컨트롤러 컴포넌트
+     Animator anim;
 
     //hpvar
-    public GameObject hpBarPrefab;
-    public Vector3 hpBaroffset = new Vector3(0, 2.2f, 0);
-
-    private Canvas uiCanvas;
-    private Image hpbarImage;
+    //public GameObject hpBarPrefab;
+   //public Vector3 hpBaroffset = new Vector3(0, 2.2f, 0);
+   //
+   //private Canvas uiCanvas;
+   //private Image hpBarImage;
 
 
 
@@ -71,9 +72,9 @@ public class EnemyFSM : MonoBehaviour
         //플레이어 트렌스폼 컴포넌트
         player = GameObject.Find("Player").transform;
         //캐릭터 컨트롤러 컴포넌트
-        //cc = GetComponent<CharacterController>();
-
-        SetHpBar();
+        cc = GetComponent<CharacterController>();
+        anim = GetComponent<Animator>();
+       // SetHpBar();
 
     }
 
@@ -104,16 +105,16 @@ public class EnemyFSM : MonoBehaviour
 
     }//end of void Update()
 
-    void SetHpBar()
-    {
-        uiCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
-        GameObject hpBar = Instantiate<GameObject>(hpBarPrefab, uiCanvas.transform);
-        hpbarImage = hpBar.GetComponentsInChildren<Image>()[1];
-
-        var _hpbar = hpBar.GetComponent<EnemyHpBar>();
-        _hpbar.targetTr = this.gameObject.transform;
-        _hpbar.offset = hpBaroffset;
-    }
+   //void SetHpBar()
+   //{
+   //    uiCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+   //    //GameObject hpBar = Instantiate<GameObject>(hpBarPrefab, uiCanvas.transform);
+   //    //hpBarImage = hpBar.GetComponentsInChildren<Image>()[1];
+   //
+   //    var _hpbar = hpBar.GetComponent<EnemyHpBar>();
+   //    _hpbar.targetTr = this.gameObject.transform;
+   //    _hpbar.offset = hpBaroffset;
+   //}
 
     //대기상태
     private void Idle()
@@ -128,8 +129,8 @@ public class EnemyFSM : MonoBehaviour
         //float distance = dir.magnitude;
         //if(distance.magnitude < findRange)
         //if(distance < findRange)
-
-        if(Vector3.Distance(transform.position, player.position) < findRange)
+        anim.SetBool("Idle", true);
+        if (Vector3.Distance(transform.position, player.position) < findRange)
         {
             state = EnemyState.Move;
             print("상태전환 : Idle -> Move");
@@ -150,6 +151,7 @@ public class EnemyFSM : MonoBehaviour
         //이동중 이동할 수 있는 최대범위에 들어왔을때
         if(Vector3.Distance(transform.position, startPoint) > moveRange)
         {
+
             state = EnemyState.Return;
             print("상태전환 : Move -> Return");
         }
@@ -186,7 +188,7 @@ public class EnemyFSM : MonoBehaviour
             //심플무브는 최소한의 물리가 적용되어 중력문제를 해결할 수 있다
             //단 내부적으로 시간처리를 하기때문에 
             //Time.deltaTime을 사용하지 않는다
-           // cc.SimpleMove(dir * speed);
+           cc.SimpleMove(dir * speed);
         }
         else //공격범위 안에 들어옴
         {
@@ -207,6 +209,8 @@ public class EnemyFSM : MonoBehaviour
         //공격범위안에 들어옴
         if(Vector3.Distance(transform.position, player.position) < attackRange)
         {
+            anim.SetBool("Run", false);
+            anim.SetBool("Attack", true);
             //일정 시간마다 플레이어를 공격하기
             timer += Time.deltaTime;
             if(timer > attTime)
@@ -221,6 +225,8 @@ public class EnemyFSM : MonoBehaviour
         }
         else//현재상태를 무브로 전환하기 (재추격)
         {
+            anim.SetBool("Attack", false);
+            anim.SetBool("Run", true);
             state = EnemyState.Move;
             print("상태전환 : Attack -> Move");
             //타이머 초기화
@@ -246,6 +252,7 @@ public class EnemyFSM : MonoBehaviour
         else
         {
             //위치값을 초기값으로 
+            
             transform.position = startPoint;
             state = EnemyState.Idle;
             print("상태전환 : Return -> Idle");
@@ -262,7 +269,7 @@ public class EnemyFSM : MonoBehaviour
         hp -= value;
 
 
-        hpbarImage.fillAmount = hp / iniHp;
+        //hpBarImage.fillAmount = hp / iniHp;
         //몬스터의 체력이 1이상이면 피격상태
         if (hp > 0)
         {
@@ -275,7 +282,7 @@ public class EnemyFSM : MonoBehaviour
         //0이하이면 죽음상태
         else
         {
-            hpbarImage.GetComponentsInChildren<Image>()[1].color = Color.clear;
+          //  hpBarImage.GetComponentsInChildren<Image>()[1].color = Color.clear;
             state = EnemyState.Die;
             print("상태전환 : AnyState -> Die");
 

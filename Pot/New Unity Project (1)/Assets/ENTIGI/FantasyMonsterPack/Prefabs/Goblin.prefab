@@ -353,7 +353,7 @@ Camera:
   m_GameObject: {fileID: 121030}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 3
   m_BackGroundColor: {r: 0.2, g: 0.22352941, b: 0.2627451, a: 0.019607844}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -1978,6 +1978,7 @@ GameObject:
   - component: {fileID: 9503822}
   - component: {fileID: 5402826}
   - component: {fileID: 6586988}
+  - component: {fileID: 1198448139}
   m_Layer: 0
   m_Name: Goblin
   m_TagString: Enemy
@@ -2050,6 +2051,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 4, y: 6.315235, z: 4}
   m_Center: {x: 0, y: 2.8973827, z: 0}
+--- !u!114 &1198448139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d51156970bad5344d93d0f352953438e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  findRange: 15
+  moveRange: 30
+  attackRange: 2
+  iniHp: 100
 --- !u!1 &175926
 GameObject:
   m_ObjectHideFlags: 0
