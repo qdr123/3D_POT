@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 //몬스터 유한상태머신
@@ -13,6 +14,7 @@ public class EnemyFSM : MonoBehaviour
     }
 
     EnemyState state; //몬스터 상태변수
+    
 
     /// 유용한 기능
     #region "Idel 상태에 필요한 변수들"
@@ -38,14 +40,16 @@ public class EnemyFSM : MonoBehaviour
     public float findRange = 5f; //플레이어를 찾는 범위
     public float moveRange = 5f; //시작지점에서 최대 이동가능한 범위
     public float attackRange = 2f; //공격 가능 범위
-    public int iniHp = 100;
     Vector3 startPoint; //몬스터 시작위치
     Transform player;   //플레이어를 찾기위해(안그럼 모든 몬스터에 다 드래그앤드랍 해줘야 한다 걍 코드로 찾아서 처리하기)
+    //Transform monster;
+    NavMeshAgent nvAgent; // 네비게이션 
     CharacterController cc; //몬스터 이동을 위해 캐릭터컨트롤러 컴포넌트
-     Animator anim;
+    Animator anim;          //몬스터 애니메이션 
 
-    //hpvar
-    //public GameObject hpBarPrefab;
+
+   //hpvar
+   //public GameObject hpBarPrefab;
    //public Vector3 hpBaroffset = new Vector3(0, 2.2f, 0);
    //
    //private Canvas uiCanvas;
@@ -54,9 +58,10 @@ public class EnemyFSM : MonoBehaviour
 
 
     ///몬스터 일반변수
-    int hp = 100; //체력
-    int att = 5; //공격력
-    float speed = 5.0f; //이동속도
+    public float hp = 100; //체력
+    public float iniHp = 100; //최대체력
+    public int att = 5; //공격력
+    public float speed = 5.0f; //이동속도
 
     //공격 딜레이
     float attTime = 2f; //2초에 한번 공격
@@ -74,15 +79,23 @@ public class EnemyFSM : MonoBehaviour
         //캐릭터 컨트롤러 컴포넌트
         cc = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
-       // SetHpBar();
+        // SetHpBar();
+
+        //moster
+        //monster = gameObject.GetComponent<Transform>();
+        nvAgent = GetComponent<NavMeshAgent>();
+
+       
 
     }
 
     void Update()
     {
+        Debug.Log(state);
         //상태에 따른 행동처리
         switch (state)
         {
+            
             case EnemyState.Idle:
                 Idle();
                 break;
@@ -103,18 +116,19 @@ public class EnemyFSM : MonoBehaviour
                 break;
         }
 
+
     }//end of void Update()
 
-   //void SetHpBar()
-   //{
-   //    uiCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
-   //    //GameObject hpBar = Instantiate<GameObject>(hpBarPrefab, uiCanvas.transform);
-   //    //hpBarImage = hpBar.GetComponentsInChildren<Image>()[1];
-   //
-   //    var _hpbar = hpBar.GetComponent<EnemyHpBar>();
-   //    _hpbar.targetTr = this.gameObject.transform;
-   //    _hpbar.offset = hpBaroffset;
-   //}
+  // void SetHpBar()
+  // {
+  //     uiCanvas = GameObject.Find("UI Canvas").GetComponent<Canvas>();
+  //     GameObject hpBar = Instantiate<GameObject>(hpBarPrefab, uiCanvas.transform);
+  //     hpBarImage = hpBar.GetComponentsInChildren<Image>()[1];
+  // 
+  //     var _hpbar = hpBar.GetComponent<EnemyHpBar>();
+  //     // _hpbar.targetTr = this.transform;
+  //    // _hpbar.offset = hpBaroffset;
+  // }
 
     //대기상태
     private void Idle()
@@ -129,11 +143,16 @@ public class EnemyFSM : MonoBehaviour
         //float distance = dir.magnitude;
         //if(distance.magnitude < findRange)
         //if(distance < findRange)
-        anim.SetBool("Idle", true);
+        
         if (Vector3.Distance(transform.position, player.position) < findRange)
         {
             state = EnemyState.Move;
-            print("상태전환 : Idle -> Move");
+            
+            Debug.Log("Idle");
+        }
+        else 
+        {
+            //anim.SetBool("Idle", false);
         }
 
     }
@@ -153,14 +172,16 @@ public class EnemyFSM : MonoBehaviour
         {
 
             state = EnemyState.Return;
-            print("상태전환 : Move -> Return");
+           
         }
         //리턴상태가 아니면 플레이어를 추격해야 한다
         else if(Vector3.Distance(transform.position, player.position) > attackRange)
         {
             //플레이어를 추격
             //이동방향 (벡터의 뺄셈)
-            Vector3 dir = (player.position - transform.position).normalized;
+            //Vector3 dir = (player.position - transform.position).normalized;
+            nvAgent.SetDestination( player.position);
+
             //dir.Normalize();
 
             //몬스터가 백스텝으로 쫓아온다
@@ -176,9 +197,9 @@ public class EnemyFSM : MonoBehaviour
             //타겟과 본인이 일직선상일경우 백덤블링으로 회전을 한다
 
             //최종적으로 자연스런 회전처리를 하려면 결국 쿼터니온을 사용해야 한다
-            transform.rotation = Quaternion.Lerp(transform.rotation, 
-                Quaternion.LookRotation(dir), 
-                10 * Time.deltaTime);
+            //transform.rotation = Quaternion.Lerp(transform.rotation, 
+               // Quaternion.LookRotation(dir), 
+               // 10 * Time.deltaTime);
 
             //캐릭터 컨트롤러를 이용해서 이동하기
             //cc.Move(dir * speed * Time.deltaTime);
@@ -188,12 +209,14 @@ public class EnemyFSM : MonoBehaviour
             //심플무브는 최소한의 물리가 적용되어 중력문제를 해결할 수 있다
             //단 내부적으로 시간처리를 하기때문에 
             //Time.deltaTime을 사용하지 않는다
-           cc.SimpleMove(dir * speed);
+           //cc.SimpleMove(dir * speed);
         }
+      
         else //공격범위 안에 들어옴
         {
             state = EnemyState.Attack;
-            print("상태전환 : Move -> Attack");
+            Debug.Log("Attack");
+           // print("상태전환 : Move -> Attack");
         }
     }
 
@@ -215,7 +238,7 @@ public class EnemyFSM : MonoBehaviour
             timer += Time.deltaTime;
             if(timer > attTime)
             {
-                print("공격");
+                Debug.Log("공격");
                 //플레이어의 필요한 스크립트 컴포넌트를 가져와서 데미지를 주면 된다
                 //player.GetComponent<PlayerMove>().hitDamage(att);
 
@@ -228,7 +251,7 @@ public class EnemyFSM : MonoBehaviour
             anim.SetBool("Attack", false);
             anim.SetBool("Run", true);
             state = EnemyState.Move;
-            print("상태전환 : Attack -> Move");
+            Debug.Log("상태전환 : Attack -> Move");
             //타이머 초기화
             timer = 0f;
         }
@@ -244,19 +267,23 @@ public class EnemyFSM : MonoBehaviour
 
         //시작위치까지 도달하지 않을때는 이동
         //도착하면 대기상태로 변경
-        if(Vector3.Distance(transform.position, startPoint) > 0.1)
+        if(Vector3.Distance(transform.position, startPoint) > 0.2f)
         {
-             Vector3 dir = (startPoint - transform.position).normalized;
-             cc.SimpleMove(dir * speed);
+            //Vector3 dir = (startPoint - transform.position).normalized;
+            //cc.SimpleMove(dir * speed);
+            nvAgent.SetDestination(startPoint);
         }
         else
         {
             //위치값을 초기값으로 
-            
+            Debug.Log("상태전환 : Return ->Idle");
+            anim.SetBool("Run", false);
+
+            nvAgent.ResetPath();
             transform.position = startPoint;
             state = EnemyState.Idle;
-            print("상태전환 : Return -> Idle");
         }
+      
     }
     //플레이어쪽에서 충돌감지를 할 수 있으니 이함수는 퍼블릭으로 만들자
     public void hitDamage(int value)
@@ -267,9 +294,8 @@ public class EnemyFSM : MonoBehaviour
 
         //체력깍기
         hp -= value;
+       // hpBarImage.fillAmount = hp / iniHp;
 
-
-        //hpBarImage.fillAmount = hp / iniHp;
         //몬스터의 체력이 1이상이면 피격상태
         if (hp > 0)
         {
@@ -282,7 +308,7 @@ public class EnemyFSM : MonoBehaviour
         //0이하이면 죽음상태
         else
         {
-          //  hpBarImage.GetComponentsInChildren<Image>()[1].color = Color.clear;
+            //hpBarImage.GetComponentsInChildren<Image>()[1].color = Color.clear;
             state = EnemyState.Die;
             print("상태전환 : AnyState -> Die");
 

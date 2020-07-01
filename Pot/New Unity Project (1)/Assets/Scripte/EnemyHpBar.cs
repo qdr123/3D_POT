@@ -10,8 +10,7 @@ public class EnemyHpBar : MonoBehaviour
     private RectTransform rectHp;
 
     [HideInInspector] public Vector3 offset = Vector3.zero;
-    [HideInInspector] 
-    public Transform targetTr;
+    [HideInInspector] public Transform targetTr;
    
 
     // Start is called before the first frame update

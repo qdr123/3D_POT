@@ -1,0 +1,8 @@
+오류 
+
+에너미 체력바 위치 조정안됨 . 
+
+CheckConsistency: Transform child can't be loaded
+오류 발생 
+
+
