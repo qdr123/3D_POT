@@ -12,7 +12,7 @@ public class EnemyFSM : MonoBehaviour
     {
         Idle, Move, Attack, Return, Damaged, Die
     }
-
+    public GameObject explosion;
     EnemyState state; //몬스터 상태변수
     
 
@@ -37,9 +37,9 @@ public class EnemyFSM : MonoBehaviour
     #endregion
 
     ///필요한 변수들
-    public float findRange = 5f; //플레이어를 찾는 범위
+    public float findRange = 3f; //플레이어를 찾는 범위
     public float moveRange = 5f; //시작지점에서 최대 이동가능한 범위
-    public float attackRange = 2f; //공격 가능 범위
+    public float attackRange = 1.8f; //공격 가능 범위
     Vector3 startPoint; //몬스터 시작위치
     Transform player;   //플레이어를 찾기위해(안그럼 모든 몬스터에 다 드래그앤드랍 해줘야 한다 걍 코드로 찾아서 처리하기)
     //Transform monster;
@@ -275,13 +275,13 @@ public class EnemyFSM : MonoBehaviour
         }
         else
         {
-            //위치값을 초기값으로 
-            Debug.Log("상태전환 : Return ->Idle");
-            anim.SetBool("Run", false);
-
-            nvAgent.ResetPath();
             transform.position = startPoint;
             state = EnemyState.Idle;
+            nvAgent.ResetPath();
+            anim.SetBool("Run", false);
+            //위치값을 초기값으로 
+            Debug.Log("상태전환 : Return ->Idle");
+          
         }
       
     }
