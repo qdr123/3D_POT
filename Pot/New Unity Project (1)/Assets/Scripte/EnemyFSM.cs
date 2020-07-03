@@ -49,11 +49,11 @@ public class EnemyFSM : MonoBehaviour
 
 
    //hpvar
-   //public GameObject hpBarPrefab;
-   //public Vector3 hpBaroffset = new Vector3(0, 2.2f, 0);
-   //
-   //private Canvas uiCanvas;
-   //private Image hpBarImage;
+   public GameObject hpBarPrefab;
+   public Vector3 hpBaroffset = new Vector3(0, 2.2f, 0);
+   
+   private Canvas uiCanvas;
+   private Image hpBarImage;
 
 
 
@@ -79,7 +79,7 @@ public class EnemyFSM : MonoBehaviour
         //캐릭터 컨트롤러 컴포넌트
         cc = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
-        // SetHpBar();
+        SetHpBar();
 
         //moster
         //monster = gameObject.GetComponent<Transform>();
@@ -119,16 +119,16 @@ public class EnemyFSM : MonoBehaviour
 
     }//end of void Update()
 
-  // void SetHpBar()
-  // {
-  //     uiCanvas = GameObject.Find("UI Canvas").GetComponent<Canvas>();
-  //     GameObject hpBar = Instantiate<GameObject>(hpBarPrefab, uiCanvas.transform);
-  //     hpBarImage = hpBar.GetComponentsInChildren<Image>()[1];
-  // 
-  //     var _hpbar = hpBar.GetComponent<EnemyHpBar>();
-  //     // _hpbar.targetTr = this.transform;
-  //    // _hpbar.offset = hpBaroffset;
-  // }
+   void SetHpBar()
+   {
+       uiCanvas = GameObject.Find("UICanvas").GetComponent<Canvas>();
+       GameObject hpBar = Instantiate<GameObject>(hpBarPrefab, uiCanvas.transform);
+       hpBarImage = hpBar.GetComponentsInChildren<Image>()[1];
+   
+       var _hpbar = hpBar.GetComponent<EnemyHpBar>();
+       _hpbar.targetTr = this.gameObject.transform;
+       _hpbar.offset = hpBaroffset;
+   }
 
     //대기상태
     private void Idle()
@@ -294,7 +294,7 @@ public class EnemyFSM : MonoBehaviour
 
         //체력깍기
         hp -= value;
-       // hpBarImage.fillAmount = hp / iniHp;
+        hpBarImage.fillAmount = hp / iniHp;
 
         //몬스터의 체력이 1이상이면 피격상태
         if (hp > 0)
@@ -308,7 +308,7 @@ public class EnemyFSM : MonoBehaviour
         //0이하이면 죽음상태
         else
         {
-            //hpBarImage.GetComponentsInChildren<Image>()[1].color = Color.clear;
+            hpBarImage.GetComponentsInChildren<Image>()[1].color = Color.clear;
             state = EnemyState.Die;
             print("상태전환 : AnyState -> Die");
 

@@ -1,14 +1,14 @@
 ﻿ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class EnemyHpBar : MonoBehaviour
 {
     private Camera uiCamera;
     private Canvas canvas;
     private RectTransform rectParent;
     private RectTransform rectHp;
-
+    public Camera cameraPos;
     [HideInInspector] public Vector3 offset = Vector3.zero;
     [HideInInspector] public Transform targetTr;
    
@@ -24,17 +24,12 @@ public class EnemyHpBar : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-       
-    }
-
     private void LateUpdate()
     {
-        var screenPos = Camera.main.WorldToScreenPoint(targetTr.position + offset);
-
-        if(screenPos.z<0.0f)
+        
+       var screenPos = Camera.main.WorldToScreenPoint(targetTr.position + offset);
+        
+        if(screenPos.z < 0.0f)
         {
             screenPos *= -1.0f;
         }
