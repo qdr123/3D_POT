@@ -8,7 +8,7 @@ public class EnemyHpBar : MonoBehaviour
     private Canvas canvas;
     private RectTransform rectParent;
     private RectTransform rectHp;
-    public Camera cameraPos;
+    //public Camera cameraPos;
     [HideInInspector] public Vector3 offset = Vector3.zero;
     [HideInInspector] public Transform targetTr;
    

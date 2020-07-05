@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Enemycollition : MonoBehaviour
 {
+    public GameObject taget;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        taget = GetComponent<GameObject>();
     }
 
     // Update is called once per frame

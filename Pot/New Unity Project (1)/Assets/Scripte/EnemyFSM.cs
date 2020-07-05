@@ -378,4 +378,13 @@ public class EnemyFSM : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(startPoint, moveRange);
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+
+        if (collision.transform.CompareTag("Enemy"))
+        {
+            Debug.Log("플레이어가 맞았다.");
+        }
+
+    }
 }

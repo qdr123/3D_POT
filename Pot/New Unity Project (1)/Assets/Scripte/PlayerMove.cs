@@ -8,6 +8,8 @@ public class PlayerMove : MonoBehaviour
     public float speed = 5.0f;
     public float Rspeed = 150; //회전속도 
     public float JumpPower = 4;
+    public float hp = 100; //체력
+    public float iniHp = 100; //최대체력
     bool jump = false;
     Rigidbody rigid;
     Animator anim;
@@ -48,6 +50,15 @@ public class PlayerMove : MonoBehaviour
         if(collision.gameObject.CompareTag("Ground"))
         {
             jump = false;
+        }
+        if(collision.gameObject.CompareTag("Enemy"))
+        {
+            hp -= 5;
+            Debug.Log(hp);
+            if(hp<=0)
+            {
+                anim.SetBool("Die", true);
+            }
         }
     }
 
