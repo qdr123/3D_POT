@@ -37,6 +37,7 @@ public class EnemyHpBar : MonoBehaviour
         RectTransformUtility.ScreenPointToLocalPointInRectangle(rectParent, screenPos, uiCamera, out localPos);
 
         rectHp.localPosition = localPos;
+        
 
     }
 

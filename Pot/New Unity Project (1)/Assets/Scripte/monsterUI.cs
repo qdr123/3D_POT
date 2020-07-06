@@ -21,5 +21,9 @@ public class monsterUI : MonoBehaviour
     {
 
         hpBar.transform.position = HeadUpPosition.transform.position;
+        if(hpBar.value <= 0)
+        {
+            hpBar.gameObject.SetActive(false);
+        }
     }
 }

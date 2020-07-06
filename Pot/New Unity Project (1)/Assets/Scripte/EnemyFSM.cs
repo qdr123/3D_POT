@@ -14,7 +14,7 @@ public class EnemyFSM : MonoBehaviour
     }
     public GameObject explosion;
     EnemyState state; //몬스터 상태변수
-    
+
 
     /// 유용한 기능
     #region "Idel 상태에 필요한 변수들"
@@ -37,6 +37,7 @@ public class EnemyFSM : MonoBehaviour
     #endregion
 
     ///필요한 변수들
+    public Text text;
     public float findRange = 3f; //플레이어를 찾는 범위
     public float moveRange = 5f; //시작지점에서 최대 이동가능한 범위
     public float attackRange = 1.8f; //공격 가능 범위
@@ -44,7 +45,7 @@ public class EnemyFSM : MonoBehaviour
     Transform player;   //플레이어를 찾기위해(안그럼 모든 몬스터에 다 드래그앤드랍 해줘야 한다 걍 코드로 찾아서 처리하기)
     //Transform monster;
     NavMeshAgent nvAgent; // 네비게이션 
-    CharacterController cc; //몬스터 이동을 위해 캐릭터컨트롤러 컴포넌트
+    //CharacterController cc; //몬스터 이동을 위해 캐릭터컨트롤러 컴포넌트
     Animator anim;          //몬스터 애니메이션 
 
 
@@ -77,14 +78,15 @@ public class EnemyFSM : MonoBehaviour
         //플레이어 트렌스폼 컴포넌트
         player = GameObject.Find("Player").transform;
         //캐릭터 컨트롤러 컴포넌트
-        cc = GetComponent<CharacterController>();
+        //cc = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
         SetHpBar();
 
         //moster
         //monster = gameObject.GetComponent<Transform>();
         nvAgent = GetComponent<NavMeshAgent>();
-
+        text = GetComponent<Text>();
+        
        
 
     }
@@ -109,10 +111,10 @@ public class EnemyFSM : MonoBehaviour
                 Return();
                 break;
             case EnemyState.Damaged:
-                //Damaged();
+               // hitDamage();
                 break;
             case EnemyState.Die:
-                //Die();
+                Die();
                 break;
         }
 
@@ -129,6 +131,8 @@ public class EnemyFSM : MonoBehaviour
        _hpbar.targetTr = this.gameObject.transform;
        _hpbar.offset = hpBaroffset;
    }
+
+    
 
     //대기상태
     private void Idle()
@@ -293,8 +297,7 @@ public class EnemyFSM : MonoBehaviour
         if (state == EnemyState.Damaged || state == EnemyState.Die) return;
 
         //체력깍기
-        hp -= value;
-        hpBarImage.fillAmount = hp / iniHp;
+       
 
         //몬스터의 체력이 1이상이면 피격상태
         if (hp > 0)
@@ -358,11 +361,11 @@ public class EnemyFSM : MonoBehaviour
     IEnumerator DieProc()
     {
         //캐릭터컨트롤러 비활성화
-        cc.enabled = false;
+        //cc.enabled = false;
 
         //2초후에 자기자신을 제거한다
         yield return new WaitForSeconds(2.0f);
-        print("죽었다!!");
+        Debug.Log("죽었다!!");
         Destroy(gameObject);
     }
 
@@ -381,10 +384,24 @@ public class EnemyFSM : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
 
-        if (collision.transform.CompareTag("Enemy"))
+       if(collision.transform.CompareTag("Player"))
         {
-            Debug.Log("플레이어가 맞았다.");
+            hp -= 10;
+            hpBarImage.fillAmount = hp / iniHp;
+            Debug.Log("적의체력 : " + hp);
+            if(hp<=0)
+            {
+                hp = 0;
+                anim.SetBool("Attack", false);
+                anim.SetBool("Run", false);
+                anim.SetBool("Idle", false);
+                anim.SetBool("Death", true);
+                state = EnemyState.Die;
+                Debug.Log("죽었다!!");
+                this.gameObject.SetActive(false);
+               
+            }
         }
-
     }
 }
+ 

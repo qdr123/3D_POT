@@ -57,7 +57,7 @@ public class PlayerMove : MonoBehaviour
             Debug.Log(hp);
             if(hp<=0)
             {
-                anim.SetBool("Die", true);
+               // anim.SetBool("Die", true);
             }
         }
     }
