@@ -11,6 +11,7 @@ public class PlayerMove : MonoBehaviour
     public float hp = 100; //체력
     public float iniHp = 100; //최대체력
     bool jump = false;
+    
     Rigidbody rigid;
     Animator anim;
     //회전각도를 직접 제어
@@ -32,6 +33,10 @@ public class PlayerMove : MonoBehaviour
         Jump();
        
     }
+
+    
+       
+    
 
     private void Jump()
     {
@@ -94,4 +99,7 @@ public class PlayerMove : MonoBehaviour
             anim.SetBool("Walk", true);
         }
     }
+
+
+
 }
