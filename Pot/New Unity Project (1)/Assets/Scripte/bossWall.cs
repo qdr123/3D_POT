@@ -10,28 +10,33 @@ public class bossWall : MonoBehaviour
     public GameObject triple;
     public GameObject last;
     public Camera sub;
-    int count;
+    int count2;
     
     // Update is called once per frame
     void Update()
     {
-        if (Enemy.active == false)
+        if (Enemy.activeSelf == false)
         {
 
-            count += 1;
+            count2 += 1;
             firewall.SetActive(false);
             PPoint.SetActive(true);
             if(PPoint.activeSelf==true)
             {
                 Debug.Log("카메라 이동중");
             }
-           
-            sub.transform.position = Vector3.Lerp(sub.transform.position, triple.transform.position, 0.3f * Time.deltaTime);
-            if (count<=120)
+            if(PPoint.activeSelf==true)
             {
-                
-                sub.transform.LookAt(last.transform);
+                sub.transform.position = Vector3.Lerp(sub.transform.position, triple.transform.position, 0.3f * Time.deltaTime);
+                sub.transform.LookAt(triple.transform);
+                if (count2 <= 120)
+                {
+                    sub.transform.position = Vector3.Lerp(triple.transform.position, last.transform.position, 0.3f * Time.deltaTime);
+
+                }
             }
+           
+            
             
 
         }

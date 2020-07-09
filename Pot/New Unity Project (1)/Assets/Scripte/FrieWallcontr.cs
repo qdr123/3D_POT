@@ -37,9 +37,12 @@ public class FrieWallcontr : MonoBehaviour
                 
                 firewall.SetActive(false);
                 camerapoint.SetActive(false);
+               
             }
+
             
-            
+
         }
+       
     }
 }
